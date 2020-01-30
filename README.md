@@ -9,6 +9,8 @@
 
 ## Description
 
+API to offer services that connect to Trello API.
+
 ## Requirements for development
 
 - Java jdk 1.8 or higher;
