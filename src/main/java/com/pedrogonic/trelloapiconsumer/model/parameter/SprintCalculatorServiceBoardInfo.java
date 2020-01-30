@@ -1,11 +1,17 @@
 package com.pedrogonic.trelloapiconsumer.model.parameter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 @Data
 public class SprintCalculatorServiceBoardInfo {
 
-    private String boardId;
+    @JsonIgnore
+    private String id;
+
+    private String shortUrl;
     private double sprintPercent;
+    private String backlogListId;
+    private String sprintListId;
 
 }

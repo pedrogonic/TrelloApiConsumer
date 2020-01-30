@@ -3,41 +3,104 @@ package com.pedrogonic.trelloapiconsumer.service;
 import com.pedrogonic.trelloapiconsumer.config.AppConfig;
 import com.pedrogonic.trelloapiconsumer.model.parameter.SprintCalculatorServiceBoardInfo;
 import com.pedrogonic.trelloapiconsumer.model.parameter.SprintCalculatorServiceRequestBody;
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloBoard;
 import com.pedrogonic.trelloapiconsumer.model.trello.TrelloCard;
 import com.pedrogonic.trelloapiconsumer.model.trello.TrelloChecklist;
 import com.pedrogonic.trelloapiconsumer.model.trello.TrelloList;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class SprintCalculatorService extends TrelloService{
 
+    double sprintHours;
+    Map<SprintCalculatorServiceBoardInfo, List<TrelloCard>> cards;
+    Map<SprintCalculatorServiceBoardInfo, List<TrelloCard>> leftoverCards;
+
     public void run(SprintCalculatorServiceRequestBody body) throws Exception {
+
+        log.info("Rodando serviço de cálculo de sprint!");
 
         double totalPercent = body.getBoards().stream().map(board -> board.getSprintPercent()).reduce(0.0, (a,b) -> a + b);
         if (totalPercent != 100)
             throw  new Exception("Percentual não soma 100!");
 
-        for (SprintCalculatorServiceBoardInfo boardInfo : body.getBoards())
-            extractCards(boardInfo);
+        cards = new HashMap<>();
+        leftoverCards = new HashMap<>();
+
+        sprintHours = body.getSprintHours();
+
+        double leftoverHours = sprintHours;
+
+        for (SprintCalculatorServiceBoardInfo boardInfo : body.getBoards()) {  processBoard(boardInfo);  }
+
+        for(Map.Entry<SprintCalculatorServiceBoardInfo, List<TrelloCard>> entry : cards.entrySet()) {
+            for (TrelloCard card : entry.getValue()) {
+                leftoverHours -= card.getHours();
+                log.info(entry.getKey().getId() + ": " + card.getName() + " - " + card.getHours());
+                moveCardToSprint(entry.getKey(), card);
+            }
+        }
+
+        log.info("Horas restantes: " + leftoverHours);
     }
 
-    private void extractCards(SprintCalculatorServiceBoardInfo boardInfo) {
+    private void moveCardToSprint(SprintCalculatorServiceBoardInfo boardInfo, TrelloCard card) {
+
+        String url = TRELLO_API_URL + "card/" + card.getId() + "/?idList=" + boardInfo.getSprintListId() + "&" + API_AND_TOKEN_PARAMS;
+        restTemplate.put( url, null
+        );
+        
+    }
+
+    private void processBoard(SprintCalculatorServiceBoardInfo boardInfo) {
+        double projectHours = sprintHours * boardInfo.getSprintPercent() / 100;
+
+        boardInfo.setId(getBoardIdBoardInfo(boardInfo));
+        boardInfo.setBacklogListId(getBoardListIdByName(boardInfo, "Backlog"));
+        boardInfo.setSprintListId(getBoardListIdByName(boardInfo, "Sprint"));
+
+        List<TrelloCard> boardCards = extractCards(boardInfo);
+        List<TrelloCard> sprintCards = new ArrayList<>();
+        for (int i = 0; i < boardCards.size() && projectHours > 0; i++ ) {
+            if (projectHours >= boardCards.get(i).getHours()) {
+                projectHours -= boardCards.get(i).getHours();
+                sprintCards.add(boardCards.get(i));
+            }
+        }
+
+        boardCards.removeAll(sprintCards);
+        cards.put(boardInfo, sprintCards);
+        leftoverCards.put(boardInfo, boardCards);
+    }
+
+    private String getBoardIdBoardInfo(SprintCalculatorServiceBoardInfo boardInfo) {
+        return restTemplate.getForObject(TRELLO_API_URL + "boards/" + boardInfo.getShortUrl() + "/?" + API_AND_TOKEN_PARAMS
+                , TrelloBoard.class).getId();
+    }
+
+    private String getBoardListIdByName(SprintCalculatorServiceBoardInfo boardInfo, String listName) {
+        TrelloList[] trelloLists = restTemplate.getForObject(
+                TRELLO_API_URL + "boards/" + boardInfo.getShortUrl() + "/lists?" + API_AND_TOKEN_PARAMS
+                , TrelloList[].class);
+
+        TrelloList trelloList = Arrays.stream(trelloLists).filter(tl -> tl.getName().equalsIgnoreCase(listName)).collect(Collectors.toList()).get(0);
+
+        return trelloList.getId();
+    }
+
+    private List<TrelloCard> extractCards(SprintCalculatorServiceBoardInfo boardInfo) {
         try {
 
-            TrelloList[] trelloLists = restTemplate.getForObject(
-                    TRELLO_API_URL + "boards/" + boardInfo.getBoardId() + "/lists?token=" + AppConfig.API_TOKEN + "&key=" + AppConfig.API_KEY
-                    , TrelloList[].class);
-
-            TrelloList backlogList = Arrays.stream(trelloLists).filter(trelloList -> trelloList.getName().equalsIgnoreCase("Backlog")).collect(Collectors.toList()).get(0);
-
-            TrelloCard[] trelloCards = restTemplate.getForObject(
-                    TRELLO_API_URL + "lists/" + backlogList.getId() + "/cards/?cards=open&checklists=all&token=" + AppConfig.API_TOKEN + "&key=" + AppConfig.API_KEY
-                    , TrelloCard[].class);
+            List<TrelloCard> trelloCards = new ArrayList<>(Arrays.asList(
+                    restTemplate.getForObject(
+                    TRELLO_API_URL + "lists/" + boardInfo.getBacklogListId() + "/cards/?cards=open&checklists=all&" + API_AND_TOKEN_PARAMS
+                    , TrelloCard[].class)
+                ));
 
             for(TrelloCard card: trelloCards) {
 
@@ -51,13 +114,14 @@ public class SprintCalculatorService extends TrelloService{
 
                 } else
                     card.setHours(card.extractHoursFromName());
-                log.info(card.getName() + " - " + card.getHours());
+                log.info(card.getId() + " - " + card.getName() + " - " + card.getHours());
             }
 
-
+            return trelloCards;
 
         } catch(Exception e) {
             e.printStackTrace();
+            return new ArrayList<>();
         }
 
     }
