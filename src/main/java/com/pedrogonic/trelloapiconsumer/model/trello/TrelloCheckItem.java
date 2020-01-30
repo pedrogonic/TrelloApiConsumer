@@ -1,4 +1,4 @@
-package com.pedrogonic.trelloapiconsumer.model;
+package com.pedrogonic.trelloapiconsumer.model.trello;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;

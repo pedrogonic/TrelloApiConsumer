@@ -1,35 +1,36 @@
 package com.pedrogonic.trelloapiconsumer.service;
 
 import com.pedrogonic.trelloapiconsumer.config.AppConfig;
-import com.pedrogonic.trelloapiconsumer.model.TrelloCard;
-import com.pedrogonic.trelloapiconsumer.model.TrelloChecklist;
-import com.pedrogonic.trelloapiconsumer.model.TrelloList;
+import com.pedrogonic.trelloapiconsumer.model.parameter.SprintCalculatorServiceBoardInfo;
+import com.pedrogonic.trelloapiconsumer.model.parameter.SprintCalculatorServiceRequestBody;
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloCard;
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloChecklist;
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloList;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
-@Component
+@Service
 @Slf4j
 public class SprintCalculatorService extends TrelloService{
 
-    // TODO: pass this by args
-    List<String> boardsIds = Arrays.asList("BOoXLhUs", "BJDCfhvw");
+    public void run(SprintCalculatorServiceRequestBody body) throws Exception {
 
-    @Override
-    public void run(String[] args) {
+        double totalPercent = body.getBoards().stream().map(board -> board.getSprintPercent()).reduce(0.0, (a,b) -> a + b);
+        if (totalPercent != 100)
+            throw  new Exception("Percentual não soma 100!");
 
-        for (String boardId : boardsIds)
-            extractCards(boardId);
+        for (SprintCalculatorServiceBoardInfo boardInfo : body.getBoards())
+            extractCards(boardInfo);
     }
 
-    private void extractCards(String boardId) {
+    private void extractCards(SprintCalculatorServiceBoardInfo boardInfo) {
         try {
 
             TrelloList[] trelloLists = restTemplate.getForObject(
-                    TRELLO_API_URL + "boards/" + boardId + "/lists?token=" + AppConfig.API_TOKEN + "&key=" + AppConfig.API_KEY
+                    TRELLO_API_URL + "boards/" + boardInfo.getBoardId() + "/lists?token=" + AppConfig.API_TOKEN + "&key=" + AppConfig.API_KEY
                     , TrelloList[].class);
 
             TrelloList backlogList = Arrays.stream(trelloLists).filter(trelloList -> trelloList.getName().equalsIgnoreCase("Backlog")).collect(Collectors.toList()).get(0);
