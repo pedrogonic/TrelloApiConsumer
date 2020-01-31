@@ -21,7 +21,7 @@ public class SprintCalculatorService extends TrelloService{
     Map<SprintCalculatorServiceBoardInfo, List<TrelloCard>> cards;
     Map<SprintCalculatorServiceBoardInfo, List<TrelloCard>> leftoverCards;
 
-    public void run(SprintCalculatorServiceRequestBody body) throws Exception {
+    public double run(SprintCalculatorServiceRequestBody body) throws Exception {
 
         log.info("Rodando serviço de cálculo de sprint!");
 
@@ -46,15 +46,40 @@ public class SprintCalculatorService extends TrelloService{
             }
         }
 
+        List<TrelloCard> l = new ArrayList<>();
+        cards.entrySet().forEach(entry -> l.addAll(entry.getValue()));
+
+        for (TrelloCard card : l) {
+            if (leftoverHours - card.getHours() >= 0) {
+                leftoverHours -= card.getHours();
+
+                SprintCalculatorServiceBoardInfo board = (SprintCalculatorServiceBoardInfo) cards.entrySet().stream().filter(
+                        entry -> entry.getValue().contains(card)
+                    ).map(Map.Entry::getKey);
+
+                moveCardToSprint(board, card);
+
+                cards.get(board).add(card);
+                leftoverCards.get(board).remove(card);
+
+            }
+        }
+
+        log.info("Cards da sprint: ");
+        cards.entrySet().stream().forEach(entry -> entry.getValue().stream().forEach(c -> log.info(entry.getKey().getId() + "- " + c.getName())));
+
+        log.info("Cards restantes no backlog: ");
+        leftoverCards.entrySet().stream().forEach(entry -> entry.getValue().stream().forEach(c -> log.info(entry.getKey().getId() + "- " + c.getName())));
+
         log.info("Horas restantes: " + leftoverHours);
+        return leftoverHours;
     }
 
     private void moveCardToSprint(SprintCalculatorServiceBoardInfo boardInfo, TrelloCard card) {
 
         String url = TRELLO_API_URL + "card/" + card.getId() + "/?idList=" + boardInfo.getSprintListId() + "&" + API_AND_TOKEN_PARAMS;
-        restTemplate.put( url, null
-        );
-        
+        restTemplate.put( url, null );
+
     }
 
     private void processBoard(SprintCalculatorServiceBoardInfo boardInfo) {
