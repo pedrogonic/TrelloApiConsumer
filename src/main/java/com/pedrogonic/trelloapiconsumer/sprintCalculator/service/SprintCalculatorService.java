@@ -103,6 +103,7 @@ public class SprintCalculatorService extends TrelloService {
         leftoverCards.put(boardInfo, boardCards);
     }
 
+    // TODO pull up
     private String getBoardIdBoardInfo(SprintCalculatorServiceBoardInfo boardInfo) {
         return restTemplate.getForObject(TRELLO_API_URL + "boards/" + boardInfo.getShortUrl() + "/?" + API_AND_TOKEN_PARAMS
                 , TrelloBoard.class).getId();
@@ -134,7 +135,7 @@ public class SprintCalculatorService extends TrelloService {
                     for (TrelloChecklist trelloChecklist : card.getChecklistList()) {
                         card.setHours(trelloChecklist.getTrelloCheckItems().stream().map(
                                 item -> item.getState().equals("incomplete") ? item.extractHoursFromName() : 0
-                        ).reduce(0, (a, b) -> a + b));
+                        ).reduce(0, Integer::sum));
                     }
 
                 } else

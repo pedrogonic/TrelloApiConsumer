@@ -93,7 +93,7 @@ localhost:8080/sprintCalculator
 - [ ] Handle Exceptions
 
 New Services:
-- [ ] Prepare board for SCRUM;
+- [x] Prepare board for SCRUM;
 - [ ] Calculate sprint progress;
 - [ ] Calculate delays;
 - [ ] Generate DOCS from card description;
