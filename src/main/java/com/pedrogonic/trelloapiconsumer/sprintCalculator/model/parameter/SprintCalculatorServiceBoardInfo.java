@@ -1,4 +1,4 @@
-package com.pedrogonic.trelloapiconsumer.model.parameter;
+package com.pedrogonic.trelloapiconsumer.sprintCalculator.model.parameter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;

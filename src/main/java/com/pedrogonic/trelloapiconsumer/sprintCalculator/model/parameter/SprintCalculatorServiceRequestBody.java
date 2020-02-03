@@ -1,4 +1,4 @@
-package com.pedrogonic.trelloapiconsumer.model.parameter;
+package com.pedrogonic.trelloapiconsumer.sprintCalculator.model.parameter;
 
 import lombok.Data;
 

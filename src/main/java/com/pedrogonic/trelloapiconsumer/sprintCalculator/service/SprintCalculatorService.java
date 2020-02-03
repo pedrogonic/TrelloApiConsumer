@@ -1,12 +1,12 @@
-package com.pedrogonic.trelloapiconsumer.service;
+package com.pedrogonic.trelloapiconsumer.sprintCalculator.service;
 
-import com.pedrogonic.trelloapiconsumer.config.AppConfig;
-import com.pedrogonic.trelloapiconsumer.model.parameter.SprintCalculatorServiceBoardInfo;
-import com.pedrogonic.trelloapiconsumer.model.parameter.SprintCalculatorServiceRequestBody;
+import com.pedrogonic.trelloapiconsumer.sprintCalculator.model.parameter.SprintCalculatorServiceBoardInfo;
+import com.pedrogonic.trelloapiconsumer.sprintCalculator.model.parameter.SprintCalculatorServiceRequestBody;
 import com.pedrogonic.trelloapiconsumer.model.trello.TrelloBoard;
 import com.pedrogonic.trelloapiconsumer.model.trello.TrelloCard;
 import com.pedrogonic.trelloapiconsumer.model.trello.TrelloChecklist;
 import com.pedrogonic.trelloapiconsumer.model.trello.TrelloList;
+import com.pedrogonic.trelloapiconsumer.service.TrelloService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class SprintCalculatorService extends TrelloService{
+public class SprintCalculatorService extends TrelloService {
 
     double sprintHours;
     Map<SprintCalculatorServiceBoardInfo, List<TrelloCard>> cards;

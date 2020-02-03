@@ -1,7 +1,7 @@
 package com.pedrogonic.trelloapiconsumer.controller;
 
-import com.pedrogonic.trelloapiconsumer.model.parameter.SprintCalculatorServiceRequestBody;
-import com.pedrogonic.trelloapiconsumer.service.SprintCalculatorService;
+import com.pedrogonic.trelloapiconsumer.sprintCalculator.model.parameter.SprintCalculatorServiceRequestBody;
+import com.pedrogonic.trelloapiconsumer.sprintCalculator.service.SprintCalculatorService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
