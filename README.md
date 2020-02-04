@@ -89,6 +89,7 @@ localhost:8080/sprintCalculator
 
 ## TODO
 
+- [ ] Refactor duplicate code
 - [ ] Front
 - [ ] Handle Exceptions
 
