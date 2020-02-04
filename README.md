@@ -86,6 +86,44 @@ curl -X POST "http://localhost:8080/sprintCalculator" -H "Content-Type: applicat
 ```shell
 localhost:8080/sprintCalculator
 ```
+### POST /prepareBoardForScrum
+
+**Description:** Sets up the board with the needed lists (Backlog, Sprint, Doing, Review, Done).
+
+#### Request
+
+**Request Body:**
+
+E.g.:
+```json
+{
+	"boards": [
+		{
+			"shortUrl": "BOoXLhUs"
+		},
+		{
+			"shortUrl": "BJDCfhvw"
+		}
+	]
+}
+```
+
+#### Response
+
+**Response Codes:** **200** (OK), **500** (Internal Server Error) - many possibilities. (TODO)
+
+**Curl:**
+
+E.g.:
+```shell
+curl -X POST "http://localhost:8080/sprintCalculator" -H "Content-Type: application/json" -d "{ \"boards\": [ { \"shortUrl\": \"BOoXLhUs\", \"sprintPercent\": 50 }, { \"shortUrl\": \"BJDCfhvw\", \"sprintPercent\": 50 } ] }"
+```
+
+**Request URL:**
+
+```shell
+localhost:8080/prepareBoardForScrum
+```
 
 ## TODO
 
