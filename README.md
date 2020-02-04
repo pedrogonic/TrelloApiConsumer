@@ -86,6 +86,11 @@ curl -X POST "http://localhost:8080/sprintCalculator" -H "Content-Type: applicat
 ```shell
 localhost:8080/sprintCalculator
 ```
+
+**Response Body:**
+
+String with leftover hours in sprint.
+
 ### POST /prepareBoardForScrum
 
 **Description:** Sets up the board with the needed lists (Backlog, Sprint, Doing, Review, Done).
@@ -116,7 +121,7 @@ E.g.:
 
 E.g.:
 ```shell
-curl -X POST "http://localhost:8080/sprintCalculator" -H "Content-Type: application/json" -d "{ \"boards\": [ { \"shortUrl\": \"BOoXLhUs\", \"sprintPercent\": 50 }, { \"shortUrl\": \"BJDCfhvw\", \"sprintPercent\": 50 } ] }"
+curl -X POST "http://localhost:8080/sprintCalculator" -H "Content-Type: application/json" -d "{ \"boards\": [ { \"shortUrl\": \"BOoXLhUs\" }, { \"shortUrl\": \"BJDCfhvw\" } ] }"
 ```
 
 **Request URL:**
