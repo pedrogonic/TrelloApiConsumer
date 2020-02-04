@@ -1,8 +1,10 @@
 package com.pedrogonic.trelloapiconsumer.model.trello;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public abstract class TrelloItemWithHours extends TrelloItem{
 
     protected Integer hours;

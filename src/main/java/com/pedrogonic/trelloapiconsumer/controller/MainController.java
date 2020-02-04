@@ -7,7 +7,7 @@ import com.pedrogonic.trelloapiconsumer.sprintCalculator.service.SprintCalculato
 import com.pedrogonic.trelloapiconsumer.sprintProgress.model.parameter.SprintProgressServiceRequestBody;
 import com.pedrogonic.trelloapiconsumer.sprintProgress.model.response.SprintProgressServiceResponseBody;
 import com.pedrogonic.trelloapiconsumer.sprintProgress.service.SprintProgressService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,7 +44,7 @@ public class MainController {
 
     }
 
-    @PostMapping("sprintProgress")
+    @GetMapping("sprintProgress")
     public SprintProgressServiceResponseBody sprintProgress(@RequestBody SprintProgressServiceRequestBody body) {
 
         return sprintProgressService.run(body);

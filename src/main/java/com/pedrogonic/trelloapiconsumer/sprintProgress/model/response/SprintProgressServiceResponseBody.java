@@ -3,6 +3,7 @@ package com.pedrogonic.trelloapiconsumer.sprintProgress.model.response;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,6 +13,10 @@ public class SprintProgressServiceResponseBody {
     private Integer totalTasks;
     private Integer doneTasks;
     private LocalDateTime dateTime;
-    private List<SprintProgressServiceBoardProgress> boards;
+    private List<SprintProgressServiceBoardProgress> boards = new ArrayList<>();
+
+    public void addBoardProgress(SprintProgressServiceBoardProgress boardProgress){
+        boards.add(boardProgress);
+    }
 
 }
