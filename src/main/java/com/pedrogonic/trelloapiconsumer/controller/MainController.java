@@ -4,6 +4,10 @@ import com.pedrogonic.trelloapiconsumer.prepareBoardForScrum.model.parameter.Pre
 import com.pedrogonic.trelloapiconsumer.prepareBoardForScrum.service.PrepareBoardForScrumService;
 import com.pedrogonic.trelloapiconsumer.sprintCalculator.model.parameter.SprintCalculatorServiceRequestBody;
 import com.pedrogonic.trelloapiconsumer.sprintCalculator.service.SprintCalculatorService;
+import com.pedrogonic.trelloapiconsumer.sprintProgress.model.parameter.SprintProgressServiceRequestBody;
+import com.pedrogonic.trelloapiconsumer.sprintProgress.model.response.SprintProgressServiceResponseBody;
+import com.pedrogonic.trelloapiconsumer.sprintProgress.service.SprintProgressService;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,9 +21,13 @@ public class MainController {
     final
     PrepareBoardForScrumService prepareBoardForScrumService;
 
-    public MainController(SprintCalculatorService sprintCalculatorService, PrepareBoardForScrumService prepareBoardForScrumService) {
+    final
+    SprintProgressService sprintProgressService;
+
+    public MainController(SprintCalculatorService sprintCalculatorService, PrepareBoardForScrumService prepareBoardForScrumService, SprintProgressService sprintProgressService) {
         this.sprintCalculatorService = sprintCalculatorService;
         this.prepareBoardForScrumService = prepareBoardForScrumService;
+        this.sprintProgressService = sprintProgressService;
     }
 
     @PostMapping("sprintCalculator")
@@ -33,6 +41,13 @@ public class MainController {
     public void prepareBoardForScrumService(@RequestBody PrepareBoardForScrumServiceRequestBody body) {
 
         prepareBoardForScrumService.run(body);
+
+    }
+
+    @GetMapping("sprintProgress")
+    public SprintProgressServiceResponseBody sprintProgress(@RequestBody SprintProgressServiceRequestBody body) {
+
+        return sprintProgressService.run(body);
 
     }
 

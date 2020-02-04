@@ -125,14 +125,86 @@ curl -X POST "http://localhost:8080/sprintCalculator" -H "Content-Type: applicat
 localhost:8080/prepareBoardForScrum
 ```
 
+### GET /sprintProgress
+
+**Description:** Calculates the progress of the sprint by getting done tasks from cards in the Review list and in the Sprint and Doing lists with check items marked as complete. 
+
+#### Request
+
+**Request Body:**
+
+E.g.:
+```json
+{
+	"boards": [
+		{
+			"shortUrl": "BOoXLhUs",
+			"sprintPercent": 50
+		},
+		{
+			"shortUrl": "BJDCfhvw",
+			"sprintPercent": 50
+		}
+	]
+}
+```
+
+#### Response
+
+**Response Codes:** **200** (OK), **500** (Internal Server Error) - many possibilities. (TODO)
+
+**Curl:**
+
+E.g.:
+```shell
+curl -X POST "http://localhost:8080/sprintProgress" -H "Content-Type: application/json" -d "{ \"boards\": [ { \"shortUrl\": \"BOoXLhUs\" }, { \"shortUrl\": \"BJDCfhvw\" } ] }"
+```
+
+**Request URL:**
+
+```shell
+localhost:8080/sprintProgress
+```
+
+**Response Body:**
+
+E.g.:
+```json
+{
+    "progress": 0.1437125748502994,
+    "totalTasks": 167,
+    "doneTasks": 24,
+    "dateTime": "2020-02-04T18:38:26.008",
+    "boards": [
+        {
+            "id": "5da9c9f9414da01a0f867927",
+            "name": "Desenvolvimentos SGE",
+            "shortUrl": "https://trello.com/b/BOoXLhUs",
+            "progress": 0.27586206896551724,
+            "totalTasks": 87,
+            "doneTasks": 24
+        },
+        {
+            "id": "5e30965f3c6a91872d595ba2",
+            "name": "Desenvolvimentos POP",
+            "shortUrl": "https://trello.com/b/BJDCfhvw",
+            "progress": 0.0,
+            "totalTasks": 80,
+            "doneTasks": 0
+        }
+    ]
+}
+```
+
 ## TODO
 
+- [ ] Refactor duplicate code
 - [ ] Front
 - [ ] Handle Exceptions
 
 New Services:
 - [x] Prepare board for SCRUM;
-- [ ] Calculate sprint progress;
+- [x] Calculate sprint progress;
 - [ ] Calculate delays;
 - [ ] Generate DOCS from card description;
 - [ ] Impediments;
