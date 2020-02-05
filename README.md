@@ -210,6 +210,8 @@ E.g.:
 New Services:
 - [x] Prepare board for SCRUM;
 - [x] Calculate sprint progress;
+- [ ] Sprint Planning results;
+- [ ] Billing;
 - [ ] Calculate delays;
 - [ ] Generate DOCS from card description;
 - [ ] Impediments;
