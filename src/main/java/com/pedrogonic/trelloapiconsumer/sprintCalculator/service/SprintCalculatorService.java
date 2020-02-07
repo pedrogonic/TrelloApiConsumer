@@ -135,7 +135,7 @@ public class SprintCalculatorService extends TrelloService {
                     for (TrelloChecklist trelloChecklist : card.getChecklistList()) {
                         card.setHours(trelloChecklist.getTrelloCheckItems().stream().map(
                                 item -> item.getState().equals("incomplete") ? item.extractHoursFromName() : 0
-                        ).reduce(0, Integer::sum));
+                        ).reduce(0.0, Double::sum));
                     }
 
                 } else

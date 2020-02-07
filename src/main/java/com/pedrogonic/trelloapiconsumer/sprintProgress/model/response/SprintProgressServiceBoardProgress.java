@@ -10,19 +10,19 @@ import lombok.EqualsAndHashCode;
 public class SprintProgressServiceBoardProgress extends TrelloBoard {
 
     private Double progress = 0.0;
-    private Integer totalTasks = 0;
-    private Integer doneTasks = 0;
+    private Double totalTasks = 0.0;
+    private Double doneTasks = 0.0;
 
     public SprintProgressServiceBoardProgress(TrelloBoard trelloBoard) {
         super(trelloBoard.getId(), trelloBoard.getName(), trelloBoard.getShortUrl());
     }
 
-    public Integer addTotalTasks(Integer tasks) {
+    public Double addTotalTasks(Double tasks) {
         totalTasks += tasks;
         return  totalTasks;
     }
 
-    public Integer addDoneTasks(Integer tasks) {
+    public Double addDoneTasks(Double tasks) {
         doneTasks += tasks;
         return  doneTasks;
     }

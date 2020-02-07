@@ -7,13 +7,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public abstract class TrelloItemWithHours extends TrelloItem{
 
-    protected Integer hours;
+    protected Double hours;
 
-    public Integer extractHoursFromName() {
+    public Double extractHoursFromName() {
         int startIndex = this.name.lastIndexOf("-") + 1;
         int endIndex = this.name.lastIndexOf("h");
-        Integer hours = 0;
-        try { hours = Integer.parseInt(this.name.substring(startIndex, endIndex).trim()); } catch (Exception e) {}
+        Double hours = 0.0;
+        try { hours = Double.parseDouble(this.name.substring(startIndex, endIndex).trim()); } catch (Exception e) {}
         return hours;
     }
 

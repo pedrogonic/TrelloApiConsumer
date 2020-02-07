@@ -1,0 +1,83 @@
+package com.pedrogonic.trelloapiconsumer.sprintPlanning.service;
+
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloBoard;
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloCard;
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloChecklist;
+import com.pedrogonic.trelloapiconsumer.model.trello.TrelloList;
+import com.pedrogonic.trelloapiconsumer.service.TrelloService;
+import com.pedrogonic.trelloapiconsumer.sprintPlanning.model.SprintPlanningResultServiceBoardInfo;
+import com.pedrogonic.trelloapiconsumer.sprintPlanning.model.response.SprintPlanningResultServiceResponseBody;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class SprintPlanningResultService extends TrelloService {
+
+    public SprintPlanningResultServiceResponseBody run(String boardUrl, Double multiplier) {
+
+        SprintPlanningResultServiceBoardInfo boardInfo = new SprintPlanningResultServiceBoardInfo();
+        boardInfo.setShortUrl(boardUrl);
+
+        boardInfo.setId(getBoardIdBoardInfo(boardInfo));
+        boardInfo.setSprintListId(getBoardListIdByName(boardInfo, "Sprint"));
+
+        List<TrelloCard> boardCards = extractCards(boardInfo);
+
+        boardCards.forEach( card -> card.setHours( card.getHours() * multiplier ) );
+
+        return new SprintPlanningResultServiceResponseBody(boardCards);
+    }
+
+    // TODO pull up
+    private String getBoardIdBoardInfo(SprintPlanningResultServiceBoardInfo boardInfo) {
+        return restTemplate.getForObject(TRELLO_API_URL + "boards/" + boardInfo.getShortUrl() + "/?" + API_AND_TOKEN_PARAMS
+                , TrelloBoard.class).getId();
+    }
+
+    private String getBoardListIdByName(SprintPlanningResultServiceBoardInfo boardInfo, String listName) {
+        TrelloList[] trelloLists = restTemplate.getForObject(
+                TRELLO_API_URL + "boards/" + boardInfo.getShortUrl() + "/lists?" + API_AND_TOKEN_PARAMS
+                , TrelloList[].class);
+
+        TrelloList trelloList = Arrays.stream(trelloLists).filter(tl -> tl.getName().equalsIgnoreCase(listName)).collect(Collectors.toList()).get(0);
+
+        return trelloList.getId();
+    }
+    private List<TrelloCard> extractCards(SprintPlanningResultServiceBoardInfo boardInfo) {
+        try {
+
+            List<TrelloCard> trelloCards = new ArrayList<>(Arrays.asList(
+                    restTemplate.getForObject(
+                            TRELLO_API_URL + "lists/" + boardInfo.getSprintListId() + "/cards/?cards=open&checklists=all&" + API_AND_TOKEN_PARAMS
+                            , TrelloCard[].class)
+            ));
+
+            for(TrelloCard card: trelloCards) {
+
+                if (card.extractHoursFromName() == 0) {
+
+                    for (TrelloChecklist trelloChecklist : card.getChecklistList()) {
+                        card.setHours(trelloChecklist.getTrelloCheckItems().stream().map(
+                                item -> item.extractHoursFromName()
+                        ).reduce(0.0, Double::sum));
+                    }
+
+                } else
+                    card.setHours(card.extractHoursFromName());
+            }
+
+            return trelloCards;
+
+        } catch(Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+
+    }
+
+
+}
