@@ -17,7 +17,9 @@ import java.util.stream.Collectors;
 @Service
 public class SprintPlanningResultService extends TrelloService {
 
-    public SprintPlanningResultServiceResponseBody run(String boardUrl, Double multiplier) {
+    private static String TOTAL_HOURS_PARAMETER_MARK = "%TOTAL_HOURS%";
+
+    public SprintPlanningResultServiceResponseBody run(String boardUrl, Double multiplier, String prependText, String appendText) {
 
         SprintPlanningResultServiceBoardInfo boardInfo = new SprintPlanningResultServiceBoardInfo();
         boardInfo.setShortUrl(boardUrl);
@@ -27,9 +29,28 @@ public class SprintPlanningResultService extends TrelloService {
 
         List<TrelloCard> boardCards = extractCards(boardInfo);
 
-        boardCards.forEach( card -> card.setHours( card.getHours() * multiplier ) );
+        final StringBuilder stringBuilder = new StringBuilder();
 
-        return new SprintPlanningResultServiceResponseBody(boardCards);
+        stringBuilder.append("<ul>");
+
+        boardCards.forEach( card -> {
+            card.setHours( card.getHours() * multiplier );
+            stringBuilder.append("<li>" + card.getName() + " - " + card.getHours() + " horas</li>"); // TODO: localization
+        });
+
+
+        stringBuilder.append("</ul>");
+
+        Double totalHours = boardCards.stream().map( card -> card.getHours()).reduce(0.0, Double::sum);
+
+        String cardsText = stringBuilder.toString();
+
+        prependText = prependText.replaceAll(TOTAL_HOURS_PARAMETER_MARK, totalHours+"");
+        appendText = appendText.replaceAll(TOTAL_HOURS_PARAMETER_MARK, totalHours+"");
+
+        String text = prependText + "<br/><br/>" + cardsText + "<br/><br/>" + appendText;
+
+        return new SprintPlanningResultServiceResponseBody(text, totalHours,boardCards);
     }
 
     // TODO pull up

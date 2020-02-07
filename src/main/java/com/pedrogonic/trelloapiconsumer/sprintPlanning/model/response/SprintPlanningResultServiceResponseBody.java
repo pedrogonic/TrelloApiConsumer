@@ -10,6 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 public class SprintPlanningResultServiceResponseBody {
 
-    List<TrelloCard> cards;
+    private String text = "";
+    private Double totalTime = 0.0;
+    private List<TrelloCard> cards;
 
 }

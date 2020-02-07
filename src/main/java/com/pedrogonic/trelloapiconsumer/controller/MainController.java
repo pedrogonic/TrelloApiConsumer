@@ -55,9 +55,12 @@ public class MainController {
     }
 
     @GetMapping("sprintPlanningResult")
-    public SprintPlanningResultServiceResponseBody sprintPlanningResult(@RequestParam String boardUrl, @RequestParam(required = false, defaultValue = "1.0") Double multiplier) {
+    public SprintPlanningResultServiceResponseBody sprintPlanningResult(@RequestParam String boardUrl,
+                                                                        @RequestParam(required = false, defaultValue = "1.0") Double multiplier,
+                                                                        @RequestParam(required = false, defaultValue = "") String prependText,
+                                                                        @RequestParam(required = false, defaultValue = "") String appendText) {
 
-        return sprintPlanningResultService.run(boardUrl, multiplier);
+        return sprintPlanningResultService.run(boardUrl, multiplier, prependText, appendText);
     }
 
 }
