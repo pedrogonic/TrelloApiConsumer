@@ -7,19 +7,28 @@ import com.pedrogonic.trelloapiconsumer.model.trello.TrelloList;
 import com.pedrogonic.trelloapiconsumer.service.TrelloService;
 import com.pedrogonic.trelloapiconsumer.sprintPlanning.model.SprintPlanningResultServiceBoardInfo;
 import com.pedrogonic.trelloapiconsumer.sprintPlanning.model.response.SprintPlanningResultServiceResponseBody;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class SprintPlanningResultService extends TrelloService {
 
     private static String TOTAL_HOURS_PARAMETER_MARK = "%TOTAL_HOURS%";
+    private static String OUTPUT_PATH = "D:/output.html";
 
     public SprintPlanningResultServiceResponseBody run(String boardUrl, Double multiplier, String prependText, String appendText) {
+
+        log.info("Rodando serviço para exportação do resultado da planning!");
 
         SprintPlanningResultServiceBoardInfo boardInfo = new SprintPlanningResultServiceBoardInfo();
         boardInfo.setShortUrl(boardUrl);
@@ -49,6 +58,22 @@ public class SprintPlanningResultService extends TrelloService {
         appendText = appendText.replaceAll(TOTAL_HOURS_PARAMETER_MARK, totalHours+"");
 
         String text = prependText + "<br/><br/>" + cardsText + "<br/><br/>" + appendText;
+
+        ClassLoader classLoader = getClass().getClassLoader();
+        File file = new File(OUTPUT_PATH);
+
+        try {
+            if (file == null)
+                file.createNewFile();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(text);
+
+            writer.close();
+
+            log.info("Atualizando arquivo " + OUTPUT_PATH);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return new SprintPlanningResultServiceResponseBody(text, totalHours,boardCards);
     }
