@@ -201,6 +201,94 @@ E.g.:
 }
 ```
 
+### GET /sprintPlanningResult
+
+**Description:** Endpoint to generate a report after the sprint Planning. The generated text is included in an html file located in D:/output.html. The optional parameters prependText and appendText can be used to modify the report. Both params can also receive a %TOTAL_HOURS% placeholder that gets replaced by the sum of hours in the sprint.
+
+#### Request
+
+**Request Parameters:**
+- boardUrl - required - short url of board to generate report
+- multiplier - optional - double to multiply all tasks hours. default: 1
+- prependText - optional - text to be prepended to generated report
+- appendText - optional - text to be appended to generated report
+
+#### Response
+
+**Response Codes:** **200** (OK), **500** (Internal Server Error) - many possibilities. (TODO)
+
+**Curl:**
+
+E.g.:
+```shell
+curl -X POST "http://localhost:8080/sprintPlanningResult?boardUrl=BOoXLhUs&multiplier=2&prependText=Prepend Text&appendText=Append Text. Total hours: %TOTAL_HOURS%" -H "Content-Type: application/json"
+```
+
+**Request URL:**
+
+```shell
+http://localhost:8080/sprintPlanningResult?boardUrl=BOoXLhUs&multiplier=2&prependText=Prepend Text&appendText=Append Text. Total hours: %TOTAL_HOURS%
+```
+
+**Response Body:**
+
+E.g.:
+```json
+{
+    "text": "Prepend Text<br/><br/><ul><li>Development 1 - 4.0 horas</li><li>Development 2 - 6.0 horas</li></ul><br/><br/>Append Text. Total hours: 10",
+    "totalTime": 10.0,
+    "cards": [
+        
+        {
+            "id": "5e2eefdcca25053bfca908a4",
+            "name": "Development 1",
+            "hours": 4.0,
+            "closed": false,
+            "checklistList": [
+                {
+                    "id": "5e2efa191bb7300d5b4feff5",
+                    "name": "Tasks",
+                    "trelloCheckItems": [
+                        {
+                            "id": "5e2efa2982a31f540fffef58",
+                            "name": "Task 1 - 2h",
+                            "hours": null,
+                            "state": "incomplete"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "5e2eefdfff333146f416ad43",
+            "name": "Development 2",
+            "hours": 6.0,
+            "closed": false,
+            "checklistList": [
+                {
+                    "id": "5e2efbc94fc8433d35fc5f0e",
+                    "name": "Tasks",
+                    "trelloCheckItems": [
+                        {
+                            "id": "5e2efbd6755b4c25f8b77b51",
+                            "name": "Task 1 - 2h",
+                            "hours": null,
+                            "state": "incomplete"
+                        },
+                        {
+                            "id": "5e2efbd7c9cf39807cdd8aea",
+                            "name": "Task 2 - 1h",
+                            "hours": null,
+                            "state": "incomplete"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+```
+
 ## TODO
 
 - [ ] Refactor duplicate code
@@ -210,7 +298,7 @@ E.g.:
 New Services:
 - [x] Prepare board for SCRUM;
 - [x] Calculate sprint progress;
-- [ ] Sprint Planning results;
+- [x] Sprint Planning results;
 - [ ] Billing;
 - [ ] Calculate delays;
 - [ ] Generate DOCS from card description;

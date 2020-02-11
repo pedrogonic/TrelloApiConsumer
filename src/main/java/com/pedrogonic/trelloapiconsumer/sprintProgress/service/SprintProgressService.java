@@ -35,10 +35,10 @@ public class SprintProgressService extends TrelloService {
 
         serviceResponseBody.setDateTime(LocalDateTime.now());
         serviceResponseBody.setTotalTasks( serviceResponseBody.getBoards().stream().map(
-                board -> board.getTotalTasks()).reduce(0,Integer::sum)
+                board -> board.getTotalTasks()).reduce(0.0,Double::sum)
         );
         serviceResponseBody.setDoneTasks( serviceResponseBody.getBoards().stream().map(
-                board -> board.getDoneTasks()).reduce(0,Integer::sum)
+                board -> board.getDoneTasks()).reduce(0.0,Double::sum)
         );
         serviceResponseBody.setProgress( serviceResponseBody.getDoneTasks() * 1.0 / serviceResponseBody.getTotalTasks() );
 
@@ -105,7 +105,7 @@ public class SprintProgressService extends TrelloService {
                 for (TrelloChecklist trelloChecklist : card.getChecklistList()) {
                     trelloChecklist.getTrelloCheckItems().stream().forEach(
                             item -> {
-                                Integer hours = item.extractHoursFromName();
+                                Double hours = item.extractHoursFromName();
                                 if(!(item.getState().equals("incomplete") && list.equalsIgnoreCase("Open"))) boardProgress.addDoneTasks(hours);
                                 boardProgress.addTotalTasks(hours);
                             }
@@ -113,7 +113,7 @@ public class SprintProgressService extends TrelloService {
                 }
 
             } else {
-                Integer hours = card.extractHoursFromName();
+                Double hours = card.extractHoursFromName();
                 if (list.equalsIgnoreCase("Closed"))
                     boardProgress.addDoneTasks(hours);
                 boardProgress.addTotalTasks(hours);

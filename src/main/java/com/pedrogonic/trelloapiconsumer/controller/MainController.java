@@ -4,13 +4,12 @@ import com.pedrogonic.trelloapiconsumer.prepareBoardForScrum.model.parameter.Pre
 import com.pedrogonic.trelloapiconsumer.prepareBoardForScrum.service.PrepareBoardForScrumService;
 import com.pedrogonic.trelloapiconsumer.sprintCalculator.model.parameter.SprintCalculatorServiceRequestBody;
 import com.pedrogonic.trelloapiconsumer.sprintCalculator.service.SprintCalculatorService;
+import com.pedrogonic.trelloapiconsumer.sprintPlanning.model.response.SprintPlanningResultServiceResponseBody;
+import com.pedrogonic.trelloapiconsumer.sprintPlanning.service.SprintPlanningResultService;
 import com.pedrogonic.trelloapiconsumer.sprintProgress.model.parameter.SprintProgressServiceRequestBody;
 import com.pedrogonic.trelloapiconsumer.sprintProgress.model.response.SprintProgressServiceResponseBody;
 import com.pedrogonic.trelloapiconsumer.sprintProgress.service.SprintProgressService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController("/")
 public class MainController {
@@ -24,10 +23,14 @@ public class MainController {
     final
     SprintProgressService sprintProgressService;
 
-    public MainController(SprintCalculatorService sprintCalculatorService, PrepareBoardForScrumService prepareBoardForScrumService, SprintProgressService sprintProgressService) {
+    final
+    SprintPlanningResultService sprintPlanningResultService;
+
+    public MainController(SprintCalculatorService sprintCalculatorService, PrepareBoardForScrumService prepareBoardForScrumService, SprintProgressService sprintProgressService, SprintPlanningResultService sprintPlanningResultService) {
         this.sprintCalculatorService = sprintCalculatorService;
         this.prepareBoardForScrumService = prepareBoardForScrumService;
         this.sprintProgressService = sprintProgressService;
+        this.sprintPlanningResultService = sprintPlanningResultService;
     }
 
     @PostMapping("sprintCalculator")
@@ -49,6 +52,15 @@ public class MainController {
 
         return sprintProgressService.run(body);
 
+    }
+
+    @GetMapping("sprintPlanningResult")
+    public SprintPlanningResultServiceResponseBody sprintPlanningResult(@RequestParam String boardUrl,
+                                                                        @RequestParam(required = false, defaultValue = "1.0") Double multiplier,
+                                                                        @RequestParam(required = false, defaultValue = "") String prependText,
+                                                                        @RequestParam(required = false, defaultValue = "") String appendText) {
+
+        return sprintPlanningResultService.run(boardUrl, multiplier, prependText, appendText);
     }
 
 }

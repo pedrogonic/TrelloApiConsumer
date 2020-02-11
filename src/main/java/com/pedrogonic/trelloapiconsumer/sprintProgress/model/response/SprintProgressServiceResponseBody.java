@@ -10,8 +10,8 @@ import java.util.List;
 public class SprintProgressServiceResponseBody {
 
     private Double progress;
-    private Integer totalTasks;
-    private Integer doneTasks;
+    private Double totalTasks;
+    private Double doneTasks;
     private LocalDateTime dateTime;
     private List<SprintProgressServiceBoardProgress> boards = new ArrayList<>();
 
